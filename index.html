@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>irrational viz</title>
+    <style>
+      #bottomcanvas {
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 0;
+        background-color: black;
+      }
+      #topcanvas {
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 1;
+        background-color: transparent;
+      }
+    </style>
+    <script src="./build/main.js" type="module" defer></script>
+  </head>
+  <body>
+    <div style="position: relative">
+      <canvas id="bottomcanvas" width="400" height="400"></canvas>
+      <canvas id="topcanvas" width="400" height="400"></canvas>
+    </div>
+  </body>
+</html>
