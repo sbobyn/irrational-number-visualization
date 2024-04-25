@@ -1,3 +1,8 @@
+const resetButton = document.getElementById("resetButton") as HTMLButtonElement;
+resetButton.onclick = () => {
+  reset();
+};
+
 // for drawing curves over time (never cleared)
 const mainBottomCanvas = document.getElementById(
   "main-bottomcanvas"
