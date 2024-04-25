@@ -1,20 +1,34 @@
 // for drawing curves over time (never cleared)
-const bottomCanvas = document.getElementById(
-  "bottomcanvas"
+const mainBottomCanvas = document.getElementById(
+  "main-bottomcanvas"
 ) as HTMLCanvasElement;
-const bottomCtx = bottomCanvas.getContext("2d") as CanvasRenderingContext2D;
+const mainBottomCtx = mainBottomCanvas.getContext(
+  "2d"
+) as CanvasRenderingContext2D;
 
 // for drawing current arm angles (cleared every frame)
-const topCanvas = document.getElementById("topcanvas") as HTMLCanvasElement;
-const topCtx = topCanvas.getContext("2d") as CanvasRenderingContext2D;
+const mainTopCanvas = document.getElementById(
+  "main-topcanvas"
+) as HTMLCanvasElement;
+const mainTopCtx = mainTopCanvas.getContext("2d") as CanvasRenderingContext2D;
 
-const cwidth = bottomCanvas.width;
-const cheight = bottomCanvas.height;
+// zoomed in on the curve
+const zoomCanvas = document.getElementById("zoom-canvas") as HTMLCanvasElement;
+const zoomCtx = zoomCanvas.getContext("2d") as CanvasRenderingContext2D;
+
+let zoomFactor = 3.0;
+
+// store previous curve points
+let prevXs: number[] = [];
+let prevYs: number[] = [];
+
+const cwidth = mainBottomCanvas.width;
+const cheight = mainBottomCanvas.height;
 
 const plotWidth = 1.2;
 const plotHeight = 1.2;
 
-// curves stay within -1,1, plotted in -1.5,1.5
+// curves stay within -1,1, plotted in -1.2,1.2
 const armLen = 0.5;
 let theta1 = 0,
   theta2 = 0;
@@ -88,21 +102,31 @@ function yFromAngle(theta: number): number {
 }
 
 function toCanvasX(x: number): number {
-  // to -1,1
   let cx = x / plotWidth;
-  // to 0,1
   cx = cx * 0.5 + 0.5;
-  // to canvas
   return cx * cwidth;
 }
 
 function toCanvasY(y: number): number {
-  // to -1,1
   let cy = y / plotHeight;
-  // to 0,1
   cy = cy * 0.5 + 0.5;
-  // to canvas
   return cheight - cy * cheight;
+}
+
+function toZoomCanvasX(x: number): number {
+  let zx = x - prevXs[prevXs.length - 1];
+  zx *= zoomFactor;
+  zx = zx / plotWidth;
+  zx = zx * 0.5 + 0.5;
+  return zx * cwidth;
+}
+
+function toZoomCanvasY(y: number): number {
+  let zy = y - prevYs[prevYs.length - 1];
+  zy *= zoomFactor;
+  zy = zy / plotHeight;
+  zy = zy * 0.5 + 0.5;
+  return cheight - zy * cheight;
 }
 
 function drawLine(
@@ -125,21 +149,32 @@ function drawPoint(ctx: CanvasRenderingContext2D, x: number, y: number) {
 }
 
 function drawCurve() {
-  drawLine(bottomCtx, prevX, prevY, xs[2], ys[2]);
+  drawLine(mainBottomCtx, prevX, prevY, xs[2], ys[2]);
 }
 
 function drawArms() {
-  topCtx.clearRect(0, 0, cwidth, cheight);
-  drawPoint(topCtx, 0, 0);
-  drawPoint(topCtx, xs[1], ys[1]);
-  drawLine(topCtx, 0, 0, xs[1], ys[1]);
-  drawPoint(topCtx, xs[2], ys[2]);
-  drawLine(topCtx, xs[1], ys[1], xs[2], ys[2]);
+  mainTopCtx.clearRect(0, 0, cwidth, cheight);
+  drawPoint(mainTopCtx, 0, 0);
+  drawPoint(mainTopCtx, xs[1], ys[1]);
+  drawLine(mainTopCtx, 0, 0, xs[1], ys[1]);
+  drawPoint(mainTopCtx, xs[2], ys[2]);
+  drawLine(mainTopCtx, xs[1], ys[1], xs[2], ys[2]);
+}
+
+function drawZoomCanvas() {
+  zoomCtx.clearRect(0, 0, cwidth, cheight);
+  zoomCtx.beginPath();
+  for (let i = 0; i < prevXs.length - 1; i++) {
+    zoomCtx.moveTo(toZoomCanvasX(prevXs[i]), toZoomCanvasY(prevYs[i]));
+    zoomCtx.lineTo(toZoomCanvasX(prevXs[i + 1]), toZoomCanvasY(prevYs[i + 1]));
+  }
+  zoomCtx.stroke();
 }
 
 function draw() {
   drawCurve();
   drawArms();
+  drawZoomCanvas();
 }
 
 function update() {
@@ -151,6 +186,8 @@ function update() {
   ys[1] = yFromAngle(theta1);
   xs[2] = xs[1] + xFromAngle(theta2);
   ys[2] = ys[1] + yFromAngle(theta2);
+  prevXs.push(xs[2]);
+  prevYs.push(ys[2]);
 }
 
 function reset() {
@@ -160,8 +197,10 @@ function reset() {
   ys[1] = yFromAngle(theta1);
   xs[2] = xs[1] + xFromAngle(theta2);
   ys[2] = ys[1] + yFromAngle(theta2);
-  bottomCtx.clearRect(0, 0, cwidth, cheight);
-  topCtx.clearRect(0, 0, cwidth, cheight);
+  mainBottomCtx.clearRect(0, 0, cwidth, cheight);
+  mainTopCtx.clearRect(0, 0, cwidth, cheight);
+  prevXs = [];
+  prevYs = [];
   update();
 }
 
@@ -171,11 +210,14 @@ function main() {
   requestAnimationFrame(main);
 }
 
-topCtx.fillStyle = "white";
-topCtx.strokeStyle = "white";
-topCtx.lineWidth = 1;
-bottomCtx.fillStyle = "white";
-bottomCtx.strokeStyle = "white";
-bottomCtx.lineWidth = 1;
+mainTopCtx.fillStyle = "white";
+mainTopCtx.strokeStyle = "white";
+mainTopCtx.lineWidth = 1;
+mainBottomCtx.fillStyle = "white";
+mainBottomCtx.strokeStyle = "white";
+mainBottomCtx.lineWidth = 1;
+zoomCtx.fillStyle = "white";
+zoomCtx.strokeStyle = "white";
+zoomCtx.lineWidth = 1;
 update();
 main();
