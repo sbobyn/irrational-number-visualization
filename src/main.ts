@@ -3,19 +3,8 @@ resetButton.onclick = () => {
   reset();
 };
 
-// for drawing curves over time (never cleared)
-const mainBottomCanvas = document.getElementById(
-  "main-bottomcanvas"
-) as HTMLCanvasElement;
-const mainBottomCtx = mainBottomCanvas.getContext(
-  "2d"
-) as CanvasRenderingContext2D;
-
-// for drawing current arm angles (cleared every frame)
-const mainTopCanvas = document.getElementById(
-  "main-topcanvas"
-) as HTMLCanvasElement;
-const mainTopCtx = mainTopCanvas.getContext("2d") as CanvasRenderingContext2D;
+const mainCanvas = document.getElementById("main-canvas") as HTMLCanvasElement;
+const mainCtx = mainCanvas.getContext("2d") as CanvasRenderingContext2D;
 
 // zoomed in on the curve
 const zoomCanvas = document.getElementById("zoom-canvas") as HTMLCanvasElement;
@@ -27,8 +16,8 @@ let zoomFactor = 3.0;
 let prevXs: number[] = [];
 let prevYs: number[] = [];
 
-const cwidth = mainBottomCanvas.width;
-const cheight = mainBottomCanvas.height;
+const cwidth = mainCanvas.width;
+const cheight = mainCanvas.height;
 
 const plotWidth = 1.2;
 const plotHeight = 1.2;
@@ -153,17 +142,23 @@ function drawPoint(ctx: CanvasRenderingContext2D, x: number, y: number) {
   ctx.fill();
 }
 
-function drawCurve() {
-  drawLine(mainBottomCtx, prevX, prevY, xs[2], ys[2]);
+function drawArms() {
+  drawPoint(mainCtx, 0, 0);
+  drawPoint(mainCtx, xs[1], ys[1]);
+  drawLine(mainCtx, 0, 0, xs[1], ys[1]);
+  drawPoint(mainCtx, xs[2], ys[2]);
+  drawLine(mainCtx, xs[1], ys[1], xs[2], ys[2]);
 }
 
-function drawArms() {
-  mainTopCtx.clearRect(0, 0, cwidth, cheight);
-  drawPoint(mainTopCtx, 0, 0);
-  drawPoint(mainTopCtx, xs[1], ys[1]);
-  drawLine(mainTopCtx, 0, 0, xs[1], ys[1]);
-  drawPoint(mainTopCtx, xs[2], ys[2]);
-  drawLine(mainTopCtx, xs[1], ys[1], xs[2], ys[2]);
+function drawMainCanvas() {
+  mainCtx.clearRect(0, 0, cwidth, cheight);
+  mainCtx.beginPath();
+  for (let i = 0; i < prevXs.length - 1; i++) {
+    mainCtx.moveTo(toCanvasX(prevXs[i]), toCanvasY(prevYs[i]));
+    mainCtx.lineTo(toCanvasX(prevXs[i + 1]), toCanvasY(prevYs[i + 1]));
+  }
+  mainCtx.stroke();
+  drawArms();
 }
 
 function drawZoomCanvas() {
@@ -177,8 +172,7 @@ function drawZoomCanvas() {
 }
 
 function draw() {
-  drawCurve();
-  drawArms();
+  drawMainCanvas();
   drawZoomCanvas();
 }
 
@@ -202,8 +196,8 @@ function reset() {
   ys[1] = yFromAngle(theta1);
   xs[2] = xs[1] + xFromAngle(theta2);
   ys[2] = ys[1] + yFromAngle(theta2);
-  mainBottomCtx.clearRect(0, 0, cwidth, cheight);
-  mainTopCtx.clearRect(0, 0, cwidth, cheight);
+  mainCtx.clearRect(0, 0, cwidth, cheight);
+  mainCtx.clearRect(0, 0, cwidth, cheight);
   prevXs = [];
   prevYs = [];
   update();
@@ -215,12 +209,9 @@ function main() {
   requestAnimationFrame(main);
 }
 
-mainTopCtx.fillStyle = "white";
-mainTopCtx.strokeStyle = "white";
-mainTopCtx.lineWidth = 1;
-mainBottomCtx.fillStyle = "white";
-mainBottomCtx.strokeStyle = "white";
-mainBottomCtx.lineWidth = 1;
+mainCtx.fillStyle = "white";
+mainCtx.strokeStyle = "white";
+mainCtx.lineWidth = 1;
 zoomCtx.fillStyle = "white";
 zoomCtx.strokeStyle = "white";
 zoomCtx.lineWidth = 1;

@@ -18,48 +18,23 @@
         top: 0;
         width: 100%;
         height: 100%;
-      }
-      #zoom-canvas {
         background-color: black;
-      }
-      .bottomcanvas {
-        z-index: 0;
-        background-color: black;
-      }
-      .topcanvas {
-        z-index: 1;
-        background-color: transparent;
       }
     </style>
     <script src="./build/main.js" type="module" defer></script>
   </head>
   <body>
     <div class="canvas-wrapper">
-      <div id="main-canvas-container" class="canvas-container">
-        <canvas
-          id="main-bottomcanvas"
-          class="bottomcanvas"
-          width="400"
-          height="400"
-        ></canvas>
-        <canvas
-          id="main-topcanvas"
-          class="topcanvas"
-          width="400"
-          height="400"
-        ></canvas>
+      <div class="canvas-container">
+        <canvas id="main-canvas" width="400" height="400"></canvas>
       </div>
       <div class="canvas-container">
-        <canvas
-          id="zoom-canvas"
-          class="topcanvas"
-          width="400"
-          height="400"
-        ></canvas>
+        <canvas id="zoom-canvas" width="400" height="400"></canvas>
       </div>
     </div>
     <div>
       <button id="resetButton" type="submit">Reset</button>
+      <br />
       <input
         id="deltaSlider"
         type="range"
