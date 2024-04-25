@@ -20,12 +20,64 @@ let theta1 = 0,
   theta2 = 0;
 
 let deltaTheta = 0.01;
-let theta2Rate = 2.0;
+let theta2Rate = Math.PI;
 
 let prevX = 0;
 let prevY = 0;
 let xs = new Float64Array(3);
 let ys = new Float64Array(3);
+
+const deltaThetaInput = document.getElementById(
+  "deltaSlider"
+) as HTMLInputElement;
+const deltaThetaSpan = document.getElementById("deltaValue") as HTMLSpanElement;
+deltaThetaInput.oninput = () => {
+  deltaTheta = parseFloat(deltaThetaInput.value);
+  deltaThetaSpan.textContent = deltaTheta.toFixed(3);
+};
+deltaThetaInput.oninput(null as any);
+
+const rateSlider = document.getElementById("rateSlider") as HTMLInputElement;
+const rateSpan = document.getElementById("rateValue") as HTMLSpanElement;
+rateSlider.oninput = () => {
+  rateSpan.textContent = rateSlider.value;
+};
+rateSlider.onchange = () => {
+  theta2Rate = parseFloat(rateSlider.value);
+  rateSpan.textContent = theta2Rate.toString();
+  reset();
+};
+
+const theta2RateSelect = document.getElementById(
+  "rateSelect"
+) as HTMLSelectElement;
+theta2RateSelect.onchange = () => {
+  switch (theta2RateSelect.value) {
+    case "pi":
+      theta2Rate = Math.PI;
+      rateSlider.disabled = true;
+      break;
+    case "e":
+      theta2Rate = Math.E;
+      rateSlider.disabled = true;
+      break;
+    case "phi":
+      theta2Rate = (1 + Math.sqrt(5)) / 2;
+      rateSlider.disabled = true;
+      break;
+    case "sqrt2":
+      theta2Rate = Math.SQRT2;
+      rateSlider.disabled = true;
+      break;
+    case "custom":
+      rateSlider.disabled = false;
+      theta2Rate = parseFloat(rateSlider.value);
+      break;
+  }
+  rateSpan.textContent = theta2Rate.toString();
+  reset();
+};
+theta2RateSelect.onchange(null as any);
 
 function xFromAngle(theta: number): number {
   return armLen * Math.cos(theta);
@@ -99,6 +151,18 @@ function update() {
   ys[1] = yFromAngle(theta1);
   xs[2] = xs[1] + xFromAngle(theta2);
   ys[2] = ys[1] + yFromAngle(theta2);
+}
+
+function reset() {
+  theta1 = 0;
+  theta2 = 0;
+  xs[1] = xFromAngle(theta1);
+  ys[1] = yFromAngle(theta1);
+  xs[2] = xs[1] + xFromAngle(theta2);
+  ys[2] = ys[1] + yFromAngle(theta2);
+  bottomCtx.clearRect(0, 0, cwidth, cheight);
+  topCtx.clearRect(0, 0, cwidth, cheight);
+  update();
 }
 
 function main() {
