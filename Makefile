@@ -6,10 +6,11 @@ buildandserve:
 build: src/*
 	@echo Building...
 	tsc 
+	cp src/index.html build/index.html
 
 serve:
 	@echo Serving...
-	servez .
+	servez build
 
 clean:
 	@echo Cleaning...
