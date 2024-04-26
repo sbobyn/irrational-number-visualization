@@ -14,3 +14,7 @@ serve:
 clean:
 	@echo Cleaning...
 	rm -rf build
+
+deploy:
+	@echo Deploying...
+	./deploy.sh
