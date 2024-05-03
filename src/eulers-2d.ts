@@ -1,5 +1,7 @@
 import { Renderer } from "./renderer.js";
 
+const thetaUnicode = "\u03B8";
+
 const plotWidth = Math.PI;
 const plotHeight = 1.4;
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
@@ -52,7 +54,11 @@ function drawSine() {
   sineRenderer.ctx.stroke();
   sineRenderer.ctx.fillStyle = "red";
   sineRenderer.drawPoint(Math.PI, Math.sin(Math.PI + phase));
-  cosArcRenderer.ctx.fillText("sin(x)", 2, canvas.height / 2 + 12);
+  cosArcRenderer.ctx.fillText(
+    `y = sin(${thetaUnicode})`,
+    2,
+    canvas.height / 2 + 12
+  );
 }
 
 function drawCosine() {
@@ -71,7 +77,7 @@ function drawCosine() {
   cosineRenderer.ctx.fillStyle = "blue";
   cosineRenderer.drawPoint(Math.PI, Math.cos(Math.PI + phase));
   cosArcRenderer.ctx.font = "12px Arial";
-  cosArcRenderer.ctx.fillText("cos(x)", 2, 10);
+  cosArcRenderer.ctx.fillText(`x = cos(${thetaUnicode})`, 2, 10);
 }
 
 function drawCircle() {
