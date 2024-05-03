@@ -22,6 +22,12 @@ const zoomCanvas = document.getElementById("zoom-canvas") as HTMLCanvasElement;
 const zoomCtx = zoomCanvas.getContext("2d") as CanvasRenderingContext2D;
 
 let zoomFactor = 3.0;
+const zoomSlider = document.getElementById("zoomSlider") as HTMLInputElement;
+const zoomSpan = document.getElementById("zoomValue") as HTMLSpanElement;
+zoomSlider.oninput = () => {
+  zoomFactor = parseFloat(zoomSlider.value);
+  zoomSpan.textContent = zoomFactor.toFixed(2);
+};
 
 // store previous curve points
 let prevXs: number[] = [];
@@ -35,8 +41,10 @@ const plotHeight = 1.2;
 
 // curves stay within -1,1, plotted in -1.2,1.2
 const armLen = 0.5;
-let theta1 = 0,
-  theta2 = 0;
+const initTheta1 = Math.PI / 1.5;
+const initTheta2 = 1.25 * Math.PI;
+let theta1 = initTheta1,
+  theta2 = initTheta2;
 
 let deltaTheta = 0.01;
 let theta2Rate = Math.PI;
@@ -201,12 +209,12 @@ function update() {
   prevY = ys[2];
   theta1 += deltaTheta;
   theta2 += theta2Rate * deltaTheta;
-  if (theta1 > Math.PI) {
+  if (theta1 > Math.PI * 2 + initTheta1) {
     theta1 -= 2 * Math.PI;
     numInnerRotations++;
     innerRotSpan.textContent = numInnerRotations.toString();
   }
-  if (theta2 > Math.PI) {
+  if (theta2 > Math.PI * 2 + initTheta2) {
     theta2 -= 2 * Math.PI;
     numOuterRotations++;
     outerRotSpan.textContent = numOuterRotations.toString();
@@ -220,8 +228,8 @@ function update() {
 }
 
 function reset() {
-  theta1 = 0;
-  theta2 = 0;
+  theta1 = initTheta1;
+  theta2 = initTheta2;
   numInnerRotations = 0;
   numOuterRotations = 0;
   innerRotSpan.textContent = "0";

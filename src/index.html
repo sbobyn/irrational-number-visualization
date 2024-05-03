@@ -38,6 +38,16 @@
       <button id="resetButton" type="submit">Reset</button>
       <br />
       <input
+        id="zoomSlider"
+        type="range"
+        min="3"
+        max="20"
+        value="3"
+        step="0.1"
+      />
+      <label for="zoomLevel">Zoom Level: <span id="zoomValue">3.0</span></label>
+      <br />
+      <input
         id="deltaSlider"
         type="range"
         min="0.001"
@@ -48,7 +58,6 @@
       <label for="deltaSlider"
         >Delta Theta: <span id="deltaValue">0.01</span></label
       >
-
       <br />
 
       <select id="rateSelect">
