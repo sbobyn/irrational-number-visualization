@@ -3,6 +3,17 @@ resetButton.onclick = () => {
   reset();
 };
 
+const pauseButton = document.getElementById("pauseButton") as HTMLButtonElement;
+let paused = false;
+pauseButton.onclick = () => {
+  paused = !paused;
+  if (paused) {
+    pauseButton.textContent = "Resume";
+  } else {
+    pauseButton.textContent = "Pause";
+  }
+};
+
 const mainCanvas = document.getElementById("main-canvas") as HTMLCanvasElement;
 const mainCtx = mainCanvas.getContext("2d") as CanvasRenderingContext2D;
 
@@ -29,6 +40,15 @@ let theta1 = 0,
 
 let deltaTheta = 0.01;
 let theta2Rate = Math.PI;
+
+let numInnerRotations = 0;
+let numOuterRotations = 0;
+const innerRotSpan = document.getElementById(
+  "numInnerRotations"
+) as HTMLSpanElement;
+const outerRotSpan = document.getElementById(
+  "numOuterRotations"
+) as HTMLSpanElement;
 
 let prevX = 0;
 let prevY = 0;
@@ -181,6 +201,16 @@ function update() {
   prevY = ys[2];
   theta1 += deltaTheta;
   theta2 += theta2Rate * deltaTheta;
+  if (theta1 > Math.PI) {
+    theta1 -= 2 * Math.PI;
+    numInnerRotations++;
+    innerRotSpan.textContent = numInnerRotations.toString();
+  }
+  if (theta2 > Math.PI) {
+    theta2 -= 2 * Math.PI;
+    numOuterRotations++;
+    outerRotSpan.textContent = numOuterRotations.toString();
+  }
   xs[1] = xFromAngle(theta1);
   ys[1] = yFromAngle(theta1);
   xs[2] = xs[1] + xFromAngle(theta2);
@@ -192,20 +222,26 @@ function update() {
 function reset() {
   theta1 = 0;
   theta2 = 0;
+  numInnerRotations = 0;
+  numOuterRotations = 0;
+  innerRotSpan.textContent = "0";
+  outerRotSpan.textContent = "0";
   xs[1] = xFromAngle(theta1);
   ys[1] = yFromAngle(theta1);
   xs[2] = xs[1] + xFromAngle(theta2);
   ys[2] = ys[1] + yFromAngle(theta2);
   mainCtx.clearRect(0, 0, cwidth, cheight);
-  mainCtx.clearRect(0, 0, cwidth, cheight);
+  zoomCtx.clearRect(0, 0, cwidth, cheight);
   prevXs = [];
   prevYs = [];
   update();
 }
 
 function main() {
-  update();
-  draw();
+  if (!paused) {
+    update();
+    draw();
+  }
   requestAnimationFrame(main);
 }
 

@@ -33,12 +33,14 @@
       </div>
     </div>
     <div>
+      <button id="pauseButton" type="submit">Pause</button>
+      <br />
       <button id="resetButton" type="submit">Reset</button>
       <br />
       <input
         id="deltaSlider"
         type="range"
-        min="0.005"
+        min="0.001"
         max="0.1"
         value="0.01"
         step="0.001"
@@ -68,6 +70,8 @@
       <label for="rateSlider"
         >Theta 2 Rate: <span id="rateValue"></span>
       </label>
+      <p>Num inner rotations: <span id="numInnerRotations">0</span></p>
+      <p>Num outer rotations: <span id="numOuterRotations">0</span></p>
     </div>
   </body>
 </html>
