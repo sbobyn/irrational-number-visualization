@@ -1,3 +1,4 @@
+import { Renderer } from "./renderer.js";
 import { xFromAngle, yFromAngle } from "./utils.js";
 
 export {};
@@ -18,12 +19,15 @@ pauseButton.onclick = () => {
   }
 };
 
+const plotWidth = 1.2;
+const plotHeight = 1.2;
+
 const mainCanvas = document.getElementById("main-canvas") as HTMLCanvasElement;
-const mainCtx = mainCanvas.getContext("2d") as CanvasRenderingContext2D;
+const mainRenderer = new Renderer(mainCanvas, plotWidth, plotHeight);
 
 // zoomed in on the curve
 const zoomCanvas = document.getElementById("zoom-canvas") as HTMLCanvasElement;
-const zoomCtx = zoomCanvas.getContext("2d") as CanvasRenderingContext2D;
+const zoomRenderer = new Renderer(zoomCanvas, plotWidth, plotHeight);
 
 let zoomFactor = 3.0;
 const zoomSlider = document.getElementById("zoomSlider") as HTMLInputElement;
@@ -39,9 +43,6 @@ let prevYs: number[] = [];
 
 const cwidth = mainCanvas.width;
 const cheight = mainCanvas.height;
-
-const plotWidth = 1.2;
-const plotHeight = 1.2;
 
 // curves stay within -1,1, plotted in -1.2,1.2
 const armLen = 0.5;
@@ -119,18 +120,6 @@ theta2RateSelect.onchange = () => {
 };
 theta2RateSelect.onchange(null as any);
 
-function toCanvasX(x: number): number {
-  let cx = x / plotWidth;
-  cx = cx * 0.5 + 0.5;
-  return cx * cwidth;
-}
-
-function toCanvasY(y: number): number {
-  let cy = y / plotHeight;
-  cy = cy * 0.5 + 0.5;
-  return cheight - cy * cheight;
-}
-
 function toZoomCanvasX(x: number): number {
   let zx = x - prevXs[prevXs.length - 1];
   zx *= zoomFactor;
@@ -147,52 +136,42 @@ function toZoomCanvasY(y: number): number {
   return cheight - zy * cheight;
 }
 
-function drawLine(
-  ctx: CanvasRenderingContext2D,
-  x0: number,
-  y0: number,
-  x1: number,
-  y1: number
-) {
-  ctx.beginPath();
-  ctx.moveTo(toCanvasX(x0), toCanvasY(y0));
-  ctx.lineTo(toCanvasX(x1), toCanvasY(y1));
-  ctx.stroke();
-}
-
-function drawPoint(ctx: CanvasRenderingContext2D, x: number, y: number) {
-  ctx.beginPath();
-  ctx.arc(toCanvasX(x), toCanvasY(y), 3, 0, Math.PI * 2);
-  ctx.fill();
-}
-
 function drawArms() {
-  drawPoint(mainCtx, 0, 0);
-  drawPoint(mainCtx, xs[1], ys[1]);
-  drawLine(mainCtx, 0, 0, xs[1], ys[1]);
-  drawPoint(mainCtx, xs[2], ys[2]);
-  drawLine(mainCtx, xs[1], ys[1], xs[2], ys[2]);
+  mainRenderer.drawPoint(0, 0);
+  mainRenderer.drawPoint(xs[1], ys[1]);
+  mainRenderer.drawLine(0, 0, xs[1], ys[1]);
+  mainRenderer.drawPoint(xs[2], ys[2]);
+  mainRenderer.drawLine(xs[1], ys[1], xs[2], ys[2]);
 }
 
 function drawMainCanvas() {
-  mainCtx.clearRect(0, 0, cwidth, cheight);
-  mainCtx.beginPath();
+  mainRenderer.clear();
+  mainRenderer.ctx.beginPath();
   for (let i = 0; i < prevXs.length - 1; i++) {
-    mainCtx.moveTo(toCanvasX(prevXs[i]), toCanvasY(prevYs[i]));
-    mainCtx.lineTo(toCanvasX(prevXs[i + 1]), toCanvasY(prevYs[i + 1]));
+    mainRenderer.ctx.moveTo(
+      mainRenderer.toCanvasX(prevXs[i]),
+      mainRenderer.toCanvasY(prevYs[i])
+    );
+    mainRenderer.ctx.lineTo(
+      mainRenderer.toCanvasX(prevXs[i + 1]),
+      mainRenderer.toCanvasY(prevYs[i + 1])
+    );
   }
-  mainCtx.stroke();
+  mainRenderer.ctx.stroke();
   drawArms();
 }
 
 function drawZoomCanvas() {
-  zoomCtx.clearRect(0, 0, cwidth, cheight);
-  zoomCtx.beginPath();
+  zoomRenderer.clear();
+  zoomRenderer.ctx.beginPath();
   for (let i = 0; i < prevXs.length - 1; i++) {
-    zoomCtx.moveTo(toZoomCanvasX(prevXs[i]), toZoomCanvasY(prevYs[i]));
-    zoomCtx.lineTo(toZoomCanvasX(prevXs[i + 1]), toZoomCanvasY(prevYs[i + 1]));
+    zoomRenderer.ctx.moveTo(toZoomCanvasX(prevXs[i]), toZoomCanvasY(prevYs[i]));
+    zoomRenderer.ctx.lineTo(
+      toZoomCanvasX(prevXs[i + 1]),
+      toZoomCanvasY(prevYs[i + 1])
+    );
   }
-  zoomCtx.stroke();
+  zoomRenderer.ctx.stroke();
 }
 
 function draw() {
@@ -234,8 +213,8 @@ function reset() {
   ys[1] = armLen * yFromAngle(theta1);
   xs[2] = xs[1] + armLen * xFromAngle(theta2);
   ys[2] = ys[1] + armLen * yFromAngle(theta2);
-  mainCtx.clearRect(0, 0, cwidth, cheight);
-  zoomCtx.clearRect(0, 0, cwidth, cheight);
+  mainRenderer.clear();
+  zoomRenderer.clear();
   prevXs = [];
   prevYs = [];
   update();
@@ -249,11 +228,11 @@ function main() {
   requestAnimationFrame(main);
 }
 
-mainCtx.fillStyle = "white";
-mainCtx.strokeStyle = "white";
-mainCtx.lineWidth = 1;
-zoomCtx.fillStyle = "white";
-zoomCtx.strokeStyle = "white";
-zoomCtx.lineWidth = 1;
+mainRenderer.ctx.fillStyle = "white";
+mainRenderer.ctx.strokeStyle = "white";
+mainRenderer.ctx.lineWidth = 1;
+zoomRenderer.ctx.fillStyle = "white";
+zoomRenderer.ctx.strokeStyle = "white";
+zoomRenderer.ctx.lineWidth = 1;
 update();
 main();
