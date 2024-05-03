@@ -5,7 +5,9 @@
     "target": "es6",
     "outDir": "./build",
     "rootDir": "./src",
-    "strict": true // Enable all strict type-checking options
+    "strict": true,
+    "sourceMap": true,
+    "esModuleInterop": true
   },
   "include": ["src/**/*"]
 }

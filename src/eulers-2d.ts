@@ -1,5 +1,7 @@
 import { Renderer } from "./renderer.js";
 
+export {};
+
 const thetaUnicode = "\u03B8";
 
 const plotWidth = Math.PI;

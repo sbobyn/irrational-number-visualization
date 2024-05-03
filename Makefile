@@ -10,7 +10,7 @@ build: src/*
 
 serve:
 	@echo Serving...
-	servez build
+	servez .
 
 clean:
 	@echo Cleaning...
