@@ -56,8 +56,8 @@ function drawSine() {
   sineRenderer.drawPoint(Math.PI, Math.sin(Math.PI + phase));
   cosArcRenderer.ctx.fillText(
     `y = sin(${thetaUnicode})`,
-    2,
-    canvas.height / 2 + 12
+    5,
+    canvas.height / 2 + 15
   );
 }
 
@@ -77,13 +77,18 @@ function drawCosine() {
   cosineRenderer.ctx.fillStyle = "blue";
   cosineRenderer.drawPoint(Math.PI, Math.cos(Math.PI + phase));
   cosArcRenderer.ctx.font = "12px Arial";
-  cosArcRenderer.ctx.fillText(`x = cos(${thetaUnicode})`, 2, 10);
+  cosArcRenderer.ctx.fillText(`x = cos(${thetaUnicode})`, 5, 15);
 }
 
 function drawCircle() {
   ctx.lineWidth = 2;
   circleRenderer.ctx.strokeStyle = "green";
   circleRenderer.ctx.fillStyle = "green";
+  circleRenderer.ctx.fillText(
+    `z(${thetaUnicode}) = x(${thetaUnicode}) + iy(${thetaUnicode})`,
+    canvas.width * (2 / 3) + 5,
+    15
+  );
   circleRenderer.drawArc(
     0,
     0,
