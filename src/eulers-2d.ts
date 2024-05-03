@@ -3,6 +3,7 @@ import { Renderer } from "./renderer.js";
 const plotWidth = Math.PI;
 const plotHeight = 1.4;
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 const canvasRenderer = new Renderer(canvas, plotWidth, plotHeight);
 const cosineRenderer = new Renderer(canvas, plotWidth, plotHeight, 0, 0);
 cosineRenderer.cw = canvas.width * (2 / 3);
@@ -37,6 +38,7 @@ for (let i = -Math.PI; i <= Math.PI + 0.01; i += 0.01) {
 }
 
 function drawSine() {
+  // sine wave
   sineRenderer.ctx.strokeStyle = "red";
   sineRenderer.ctx.beginPath();
   for (let i = 0; i < thetas.length; i++) {
@@ -73,8 +75,9 @@ function drawCosine() {
 }
 
 function drawCircle() {
-  circleRenderer.ctx.strokeStyle = "black";
-  circleRenderer.ctx.fillStyle = "black";
+  ctx.lineWidth = 2;
+  circleRenderer.ctx.strokeStyle = "green";
+  circleRenderer.ctx.fillStyle = "green";
   circleRenderer.drawArc(
     0,
     0,
@@ -82,14 +85,18 @@ function drawCircle() {
     -(Math.PI + phase),
     true
   );
+  ctx.lineWidth = 1;
   const x = Math.cos(Math.PI + phase) / plotHeight;
   const y = Math.sin(Math.PI + phase) / plotHeight;
   circleRenderer.drawPoint(x, y);
   circleRenderer.drawLine(0, 0, x, y);
   circleRenderer.ctx.strokeStyle = "red";
   circleRenderer.drawLine(-1, Math.sin(Math.PI + phase) / plotHeight, x, y);
+  circleRenderer.drawLine(0, 0, 0, y);
+
   circleRenderer.ctx.strokeStyle = "blue";
   circleRenderer.drawLine(Math.cos(Math.PI + phase) / plotHeight, 1, x, y);
+  circleRenderer.drawLine(0, 0, x, 0);
 }
 
 function drawCosArc() {
@@ -116,6 +123,95 @@ function drawBorders() {
   );
 }
 
+function drawGrid() {
+  cosArcRenderer.ctx.strokeStyle = "#dddddd";
+  circleRenderer.ctx.strokeStyle = "#dddddd";
+  cosineRenderer.ctx.strokeStyle = "#dddddd";
+  sineRenderer.ctx.strokeStyle = "#dddddd";
+  // cosine arc
+  // horizontal
+  cosArcRenderer.drawArc(
+    -1,
+    -1,
+    cosArcRenderer.cw * 0.5 * (1 + Math.cos(Math.PI) / plotHeight),
+    -Math.PI / 2,
+    true
+  );
+  cosArcRenderer.drawArc(-1, -1, cosArcRenderer.cw * 0.5, -Math.PI / 2, true);
+  cosArcRenderer.drawArc(
+    -1,
+    -1,
+    cosArcRenderer.cw * (1 - 0.5 * (1 + Math.cos(Math.PI) / plotHeight)),
+    -Math.PI / 2,
+    true
+  );
+  // circle
+  // horizontal
+  circleRenderer.drawLine(-1, 0, 1, 0);
+  circleRenderer.drawLine(-1, 1 / plotHeight, 1, 1 / plotHeight);
+  circleRenderer.drawLine(-1, -1 / plotHeight, 1, -1 / plotHeight);
+  //vertical
+  circleRenderer.drawLine(0, -1, 0, 1);
+  circleRenderer.drawLine(1 / plotHeight, -1, 1 / plotHeight, 1);
+  circleRenderer.drawLine(-1 / plotHeight, -1, -1 / plotHeight, 1);
+  // cosine & sine
+  // horizontal
+  cosineRenderer.drawLine(-Math.PI, 1, Math.PI, 1);
+  cosineRenderer.drawLine(-Math.PI, 0, Math.PI, 0);
+  cosineRenderer.drawLine(-Math.PI, -1, Math.PI, -1);
+  sineRenderer.drawLine(-Math.PI, 1, Math.PI, 1);
+  sineRenderer.drawLine(-Math.PI, 0, Math.PI, 0);
+  sineRenderer.drawLine(-Math.PI, -1, Math.PI, -1);
+  // vertical
+  cosineRenderer.drawLine(-phase, -1, -phase, 1);
+  sineRenderer.drawLine(-phase, -1, -phase, 1);
+  if (-phase + Math.PI / 2 < Math.PI) {
+    cosineRenderer.drawLine(-phase + Math.PI / 2, -1, -phase + Math.PI / 2, 1);
+    sineRenderer.drawLine(-phase + Math.PI / 2, -1, -phase + Math.PI / 2, 1);
+  }
+  if (-phase - Math.PI / 2 > -Math.PI) {
+    cosineRenderer.drawLine(-phase - Math.PI / 2, -1, -phase - Math.PI / 2, 1);
+    sineRenderer.drawLine(-phase - Math.PI / 2, -1, -phase - Math.PI / 2, 1);
+  }
+  if (-phase + Math.PI < Math.PI) {
+    cosineRenderer.drawLine(-phase + Math.PI, -1, -phase + Math.PI, 1);
+    sineRenderer.drawLine(-phase + Math.PI, -1, -phase + Math.PI, 1);
+  }
+  if (-phase - Math.PI > -Math.PI) {
+    cosineRenderer.drawLine(-phase - Math.PI, -1, -phase - Math.PI, 1);
+    sineRenderer.drawLine(-phase - Math.PI, -1, -phase - Math.PI, 1);
+  }
+
+  if (-phase + (3 / 2) * Math.PI < Math.PI) {
+    cosineRenderer.drawLine(
+      -phase + (3 / 2) * Math.PI,
+      -1,
+      -phase + (3 / 2) * Math.PI,
+      1
+    );
+    sineRenderer.drawLine(
+      -phase + (3 / 2) * Math.PI,
+      -1,
+      -phase + (3 / 2) * Math.PI,
+      1
+    );
+  }
+  if (-phase - (3 / 2) * Math.PI > -Math.PI) {
+    cosineRenderer.drawLine(
+      -phase - (3 / 2) * Math.PI,
+      -1,
+      -phase - (3 / 2) * Math.PI,
+      1
+    );
+    sineRenderer.drawLine(
+      -phase - (3 / 2) * Math.PI,
+      -1,
+      -phase - (3 / 2) * Math.PI,
+      1
+    );
+  }
+}
+
 function draw() {
   phase += 0.01;
   if (phase > Math.PI) {
@@ -126,10 +222,15 @@ function draw() {
   sineRenderer.clear();
   circleRenderer.clear();
   cosArcRenderer.clear();
+
+  ctx.lineWidth = 1;
+  drawGrid();
   drawBorders();
+  ctx.lineWidth = 2;
   drawSine();
   drawCosine();
   drawCircle();
+  ctx.lineWidth = 1;
   drawCosArc();
   requestAnimationFrame(draw);
 }
