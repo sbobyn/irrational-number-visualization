@@ -6,7 +6,7 @@ buildandserve:
 build: src/*
 	@echo Building...
 	tsc 
-	cp src/index.html build/index.html
+	cp src/*.html build/ 
 
 serve:
 	@echo Serving...

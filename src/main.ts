@@ -1,3 +1,7 @@
+import { xFromAngle, yFromAngle } from "./utils.js";
+
+export {};
+
 const resetButton = document.getElementById("resetButton") as HTMLButtonElement;
 resetButton.onclick = () => {
   reset();
@@ -115,14 +119,6 @@ theta2RateSelect.onchange = () => {
 };
 theta2RateSelect.onchange(null as any);
 
-function xFromAngle(theta: number): number {
-  return armLen * Math.cos(theta);
-}
-
-function yFromAngle(theta: number): number {
-  return armLen * Math.sin(theta);
-}
-
 function toCanvasX(x: number): number {
   let cx = x / plotWidth;
   cx = cx * 0.5 + 0.5;
@@ -219,10 +215,10 @@ function update() {
     numOuterRotations++;
     outerRotSpan.textContent = numOuterRotations.toString();
   }
-  xs[1] = xFromAngle(theta1);
-  ys[1] = yFromAngle(theta1);
-  xs[2] = xs[1] + xFromAngle(theta2);
-  ys[2] = ys[1] + yFromAngle(theta2);
+  xs[1] = armLen * xFromAngle(theta1);
+  ys[1] = armLen * yFromAngle(theta1);
+  xs[2] = xs[1] + armLen * xFromAngle(theta2);
+  ys[2] = ys[1] + armLen * yFromAngle(theta2);
   prevXs.push(xs[2]);
   prevYs.push(ys[2]);
 }
@@ -234,10 +230,10 @@ function reset() {
   numOuterRotations = 0;
   innerRotSpan.textContent = "0";
   outerRotSpan.textContent = "0";
-  xs[1] = xFromAngle(theta1);
-  ys[1] = yFromAngle(theta1);
-  xs[2] = xs[1] + xFromAngle(theta2);
-  ys[2] = ys[1] + yFromAngle(theta2);
+  xs[1] = armLen * xFromAngle(theta1);
+  ys[1] = armLen * yFromAngle(theta1);
+  xs[2] = xs[1] + armLen * xFromAngle(theta2);
+  ys[2] = ys[1] + armLen * yFromAngle(theta2);
   mainCtx.clearRect(0, 0, cwidth, cheight);
   zoomCtx.clearRect(0, 0, cwidth, cheight);
   prevXs = [];
