@@ -14,6 +14,9 @@ git merge main -m "Merge main into gh-pages"
 echo -e "\nCleaning and building new changes..."
 make clean && make build
 
+echo -e "\nCopying node_modules to build directory..."
+cp -r node_modules build/
+
 echo -e "\nAdding all changes to git..."
 git add .
 
