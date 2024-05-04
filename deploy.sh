@@ -17,9 +17,9 @@ make clean && make build
 echo -e "\nCreating build directory..."
 rm -rf build
 mkdir -p build
-cp *.html build/
-cp -r js/ build/ 
-cp -r lib/ build/
+cp *.html build
+cp -r js build 
+cp -r lib build
 
 echo -e "\nAdding all changes to git..."
 git add .
