@@ -18,8 +18,8 @@ echo -e "\nCreating build directory..."
 rm -rf build
 mkdir -p build
 cp *.html build/
-cp js/ build/ 
-cp lib/ build/
+cp -r js/ build/ 
+cp -r lib/ build/
 
 echo -e "\nAdding all changes to git..."
 git add .
