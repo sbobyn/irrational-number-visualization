@@ -28,7 +28,7 @@ echo -e "\nChecking for changes to commit..."
 git diff --staged --quiet || (echo -e "Committing changes..." && git commit -m "Automated deployment: $(date)")
 
 echo -e "\nPushing changes to gh-pages..."
-git subtree push --prefix build origin gh-pages
+git push origin gh-pages
 
 echo -e "\nSwitching back to main branch..."
 git checkout main
