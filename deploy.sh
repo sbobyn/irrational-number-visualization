@@ -14,11 +14,12 @@ git merge main -m "Merge main into gh-pages"
 echo -e "\nCleaning and building new changes..."
 make clean && make build
 
-echo -e "\nCopying files to demo directory..."
-cd build && mkdir -p demos && mv *.html demos/ && mv *.js* demos/ && cd ..
-
-echo -e "\nCopying node_modules to build directory..."
-cp -r node_modules build/
+echo -e "\nCreating build directory..."
+rm -rf build
+mkdir -p build
+cp *.html build/
+cp js/ build/ 
+cp lib/ build/
 
 echo -e "\nAdding all changes to git..."
 git add .

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>irrational viz</title>
+    <style>
+      .canvas-wrapper {
+        display: flex;
+      }
+      .canvas-container {
+        position: relative;
+        width: 400px;
+        height: 400px;
+        margin-right: 5px;
+      }
+      canvas {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: black;
+      }
+    </style>
+    <script src="./js/irrational-vis.js" type="module" defer></script>
+  </head>
+  <body>
+    <div class="canvas-wrapper">
+      <div class="canvas-container">
+        <canvas id="main-canvas" width="400" height="400"></canvas>
+      </div>
+      <div class="canvas-container">
+        <canvas id="zoom-canvas" width="400" height="400"></canvas>
+      </div>
+    </div>
+    <div>
+      <button id="pauseButton" type="submit">Pause</button>
+      <br />
+      <button id="resetButton" type="submit">Reset</button>
+      <br />
+      <input
+        id="zoomSlider"
+        type="range"
+        min="3"
+        max="20"
+        value="3"
+        step="0.1"
+      />
+      <label for="zoomLevel">Zoom Level: <span id="zoomValue">3.0</span></label>
+      <br />
+      <input
+        id="deltaSlider"
+        type="range"
+        min="0.001"
+        max="0.1"
+        value="0.01"
+        step="0.001"
+      />
+      <label for="deltaSlider"
+        >Delta Theta: <span id="deltaValue">0.01</span></label
+      >
+      <br />
+
+      <select id="rateSelect">
+        <option value="pi" selected>pi</option>
+        <option value="e">e</option>
+        <option value="sqrt2">sqrt2</option>
+        <option value="phi">golden ratio</option>
+        <option value="custom">custom rational</option>
+      </select>
+      <br />
+      <input
+        id="rateSlider"
+        type="range"
+        min="1"
+        max="4"
+        value="2"
+        step="0.1"
+      />
+      <label for="rateSlider"
+        >Theta 2 Rate: <span id="rateValue"></span>
+      </label>
+      <p>Num inner rotations: <span id="numInnerRotations">0</span></p>
+      <p>Num outer rotations: <span id="numOuterRotations">0</span></p>
+    </div>
+  </body>
+</html>
