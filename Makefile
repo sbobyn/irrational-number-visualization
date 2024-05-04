@@ -17,7 +17,7 @@ serve:
 
 clean:
 	@echo Cleaning...
-	rm -rf js/*
+	rm js/*
 
 deploy:
 	@echo Deploying...
